@@ -53,6 +53,25 @@ Sovereign replaces "broadcast-and-hope" agent loops with a **Deterministic Task 
 
 ---
 
+## 🎯 When to Use Sovereign (and When NOT To)
+
+Sovereign is a **local-first, minimal-footprint runtime**. It is not a replacement for enterprise-grade distributed systems.
+
+### Use Sovereign IF:
+- You need a **single-binary-feel** runtime that runs entirely on local/air-gapped hardware.
+- You require **embedded audit logs** (SQLite) without a SaaS dependency.
+- You are building a **lightweight CLI tool** or edge-device agent.
+
+### Use [Best-of-Breed] Tools IF:
+- **Orchestration**: You need complex scheduling and retries at scale → Use **Prefect** or **Dagster**.
+- **Agent Logic**: You need a mature, community-backed graph framework → Use **LangGraph**.
+- **Sandboxing**: You need production-grade microVM isolation *today* → Use **E2B**.
+- **Observability**: You need an interactive, team-based dashboard → Use **Langfuse**.
+- **Production Agents**: You need a battle-tested framework with multi-agent support → Use **CrewAI** or **AutoGen**.
+
+
+---
+
 ## 🛡️ Security & Zero-Trust
 
 The Sovereign runtime enforces a **Default-DENY** policy. No tool can access the filesystem, network, or shell without an explicit capability grant.
