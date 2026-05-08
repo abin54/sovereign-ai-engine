@@ -1,0 +1,21 @@
+graph_id: security_audit_v1
+nodes:
+  scan_project:
+    id: scan_project
+    skill_name: security
+    action: shell_command
+    input_template:
+      cmd: "ls -R"
+    dependencies: []
+    timeout: 30
+    retries: 2
+  analyze_findings:
+    id: analyze_findings
+    skill_name: ml
+    action: analyze_report
+    input_template:
+      report: "$scan_project.output"
+    dependencies:
+      - scan_project
+    timeout: 60
+    retries: 3

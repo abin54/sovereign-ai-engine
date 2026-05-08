@@ -1,6 +1,9 @@
 [project]
 name = "orchestrator"
 version = "0.1.0"
+
+[project.scripts]
+sovereign = "orchestrator.cli:app"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -9,7 +12,10 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "shared",
+    "typer[all]",
+    "pyyaml",
 ]
+
 
 [tool.uv.sources]
 shared = { workspace = true }
