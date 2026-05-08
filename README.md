@@ -1,0 +1,97 @@
+# Sovereign AI Engine: The Deterministic AI Runtime
+
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/abin54/sovereign-ai-engine)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> **"Reproduction is the soul of reliability."**
+> Sovereign is the first AI framework built for high-stakes environments where reproducibility, policy enforcement, and zero-trust execution are non-negotiable.
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/abin54/sovereign-ai-engine.git
+cd sovereign-ai-engine
+
+# Initialize the workspace using uv
+uv sync
+```
+
+### Running a Deterministic Task
+
+```bash
+# Execute a task graph with full audit logging and policy enforcement
+sovereign run ./examples/security_scan.yaml
+```
+
+---
+
+## 🏗️ Architecture
+
+Sovereign replaces "broadcast-and-hope" agent loops with a **Deterministic Task Graph (DTG)**.
+
+- **Task Nodes**: Pydantic-validated nodes with strict input/output schemas.
+- **Capability-Based Security**: Tools execute in a gVisor-inspired sandbox with granular permissions.
+- **Immutable Ledger**: Every action is recorded in a tamper-resistant SQLite audit ledger.
+- **Async Messaging**: Microservice architecture powered by Redis Streams.
+
+---
+
+## ⚖️ Comparison
+
+| Feature | AutoGPT / LangChain | Sovereign AI Engine |
+| :--- | :--- | :--- |
+| **Execution Model** | Autonomous Loop (Probabilistic) | Directed Acyclic Graph (Deterministic) |
+| **Security** | os.system() (Unsafe) | Sandbox Subprocess (Zero-Trust) |
+| **Verification** | Human Observation | Pydantic Schema Validation |
+| **Audit Trail** | Print Statements | Immutable SQL Ledger |
+| **State Management** | Global Mutability | Checkpointed Node States |
+
+---
+
+## 🛡️ Security & Zero-Trust
+
+The Sovereign runtime enforces a **Default-DENY** policy. No tool can access the filesystem, network, or shell without an explicit capability grant.
+
+- **Isolation**: Tools run in temporary, isolated directories.
+- **Integrity**: Audit logs are stored in a SQLite database with Write-Ahead Logging (WAL).
+- **Control**: Subprocess execution avoids `shell=True` to prevent command injection.
+
+---
+
+## 🗺️ Roadmap
+
+### 30-Day: Foundation
+
+- [x] Monorepo Transition
+- [x] Zero-Trust Executor MVP
+- [ ] Comprehensive CLI (`sovereign-cli`)
+- [ ] Task Graph Schema Validation
+
+### 90-Day: Scale
+
+- [ ] Docker-based MicroVM Sandboxing
+- [ ] Distributed Task Execution
+- [ ] Real-time Observability Dashboard
+
+### 180-Day: Ecosystem
+
+- [ ] Sovereign Hub (Shared Task Graphs)
+- [ ] Long-term Cognitive Memory Service
+- [ ] Local-first LLM Optimization
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from engineers who value reliability over hype. Please read our [Contributing Guide](CONTRIBUTING.md) to get started.
+
+---
+
+## 📄 License
+
+MIT © Abinash Sahu
