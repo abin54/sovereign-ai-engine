@@ -4,10 +4,27 @@ version = "0.1.0"
 description = "A production-grade, microservice-driven AI agent system."
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "opentelemetry-api>=1.41.1",
+    "opentelemetry-exporter-otlp>=1.41.1",
+    "opentelemetry-instrumentation>=0.62b1",
+    "opentelemetry-sdk>=1.41.1",
+    "orchestrator",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
+    "redis>=7.4.0",
+]
 
 [tool.uv.workspace]
 members = ["packages/*"]
+
+[tool.uv.sources]
+orchestrator = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=1.3.0",
+]
 
 [tool.uv]
 managed = true

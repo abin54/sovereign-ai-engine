@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 import enum
 
@@ -21,6 +21,9 @@ class AuditLog(BaseModel):
     capabilities_used: List[Capability]
     result_summary: str
     success: bool
+    previous_hash: Optional[str] = None
+    hash: Optional[str] = None
+    signature: Optional[str] = None
 
 class ToolExecutorInterface:
     async def execute(self, tool_name: str, args: Dict[str, Any], permissions: ToolPermissions) -> Any:

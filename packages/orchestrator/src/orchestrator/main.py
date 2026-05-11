@@ -31,7 +31,6 @@ class Orchestrator:
 
     async def execute_node(self, node: TaskNode, instance: GraphInstance):
         task_id = f"{instance.instance_id}_{node.id}"
-        instance.update_node(node.id, TaskStatus.RUNNING)
         
         input_data = self._resolve_input(node.input_template, instance)
         
@@ -42,20 +41,33 @@ class Orchestrator:
             input_data=input_data
         )
         
-        self.logger.info(f"Dispatching task {node.id} to {node.skill_name}", node_id=node.id, skill_name=node.skill_name)
-        
-        topic = f"tasks.{node.skill_name}"
-        await self.bus.publish(topic, request)
-        
-        # In a real system, we'd subscribe to a response stream.
-        # For the MVP, we'll poll for the response on a dedicated stream.
-        response = await self._wait_for_response(task_id)
-        
-        if response.status == TaskStatus.COMPLETED:
-            instance.update_node(node.id, TaskStatus.COMPLETED, output=response.output_data)
-        else:
-            instance.update_node(node.id, TaskStatus.FAILED, error=response.error)
-            raise RuntimeError(f"Task {node.id} failed: {response.error}")
+        max_retries = node.retries
+        for attempt in range(max_retries + 1):
+            try:
+                instance.update_node(node.id, TaskStatus.RUNNING)
+                self.logger.info(f"Dispatching task {node.id} to {node.skill_name} (Attempt {attempt+1}/{max_retries+1})", 
+                                  node_id=node.id, skill_name=node.skill_name)
+                
+                topic = f"tasks.{node.skill_name}"
+                await self.bus.publish(topic, request)
+                
+                response = await self._wait_for_response(task_id, timeout=node.timeout * 1000)
+                
+                if response.status == TaskStatus.COMPLETED:
+                    instance.update_node(node.id, TaskStatus.COMPLETED, output=response.output_data)
+                    return
+                else:
+                    raise RuntimeError(f"Task {node.id} failed: {response.error}")
+            
+            except Exception as e:
+                self.logger.error(f"Error executing node {node.id}: {e}")
+                if attempt < max_retries:
+                    wait_time = 2 ** attempt # Exponential backoff
+                    self.logger.info(f"Retrying node {node.id} in {wait_time}s...")
+                    await asyncio.sleep(wait_time)
+                else:
+                    instance.update_node(node.id, TaskStatus.FAILED, error=str(e))
+                    raise
 
     def _resolve_input(self, template: Dict[str, Any], instance: GraphInstance) -> Dict[str, Any]:
         resolved = {}
@@ -75,18 +87,13 @@ class Orchestrator:
                 resolved[k] = v
         return resolved
 
-    async def _wait_for_response(self, task_id: str) -> TaskResponse:
-        """Polls for a response on the response stream (for MVP)."""
+    async def _wait_for_response(self, task_id: str, timeout: int = 60000) -> TaskResponse:
+        """Waits for a response on the response stream using event-driven subscription."""
         topic = f"responses.{task_id}"
         self.logger.info(f"Waiting for response on {topic}...")
         
-        # Simple polling loop for MVP
-        for _ in range(60): # 60 second timeout
-            streams = await self.bus.client.xread({topic: "0"}, count=1, block=1000)
-            if streams:
-                for _, messages in streams:
-                    for _, message_data in messages:
-                        return TaskResponse.model_validate_json(message_data["data"])
-            await asyncio.sleep(1)
+        message_data = await self.bus.receive(topic, timeout=timeout)
+        if message_data:
+            return TaskResponse.model_validate_json(message_data["data"])
         
         return TaskResponse(task_id=task_id, status=TaskStatus.FAILED, error="Timeout waiting for response")

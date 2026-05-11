@@ -16,6 +16,18 @@ class TaskGraph(BaseModel):
     graph_id: str
     nodes: Dict[str, TaskNode]
     
+    from pydantic import model_validator
+
+    @model_validator(mode='after')
+    def validate_dependencies(self) -> 'TaskGraph':
+        for node_id, node in self.nodes.items():
+            for dep in node.dependencies:
+                if dep not in self.nodes:
+                    raise ValueError(f"Node '{node_id}' has missing dependency: '{dep}'")
+                if dep == node_id:
+                    raise ValueError(f"Node '{node_id}' cannot depend on itself")
+        return self
+    
     def get_execution_order(self) -> List[List[str]]:
         """Returns nodes in topological order, grouped by parallelizable levels."""
         levels = []

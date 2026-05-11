@@ -7,13 +7,15 @@ from .main import Orchestrator
 from shared.bus import MessageBus
 from shared.dag import TaskGraph
 
+from shared.config import settings
+
 app = typer.Typer(name="sovereign", help="Sovereign AI Engine CLI")
 
 @app.command()
 def run(
     graph_file: Path = typer.Argument(..., help="Path to the task graph YAML file"),
-    redis_host: str = typer.Option("localhost", help="Redis host for the message bus"),
-    redis_port: int = typer.Option(6379, help="Redis port for the message bus"),
+    redis_host: str = typer.Option(None, help="Redis host for the message bus"),
+    redis_port: int = typer.Option(None, help="Redis port for the message bus"),
 ):
     """Execute a deterministic task graph."""
     if not graph_file.exists():
