@@ -1,4 +1,5 @@
 import json
+import asyncio
 from typing import Any, Callable, Dict, Optional, Coroutine
 import redis.asyncio as redis
 from .messages import Message
@@ -26,7 +27,6 @@ class MessageBus:
 
     async def subscribe(self, topic: str, consumer_group: str, consumer_name: str, callback: Callable[[Any], Coroutine[Any, Any, None]], stop_event: Optional[asyncio.Event] = None):
         """Subscribes to a topic using a consumer group (Async)."""
-        import asyncio
         try:
             await self.client.xgroup_create(topic, consumer_group, id="0", mkstream=True)
         except redis.exceptions.ResponseError as e:
