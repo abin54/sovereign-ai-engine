@@ -1,0 +1,20 @@
+site_name: Sovereign AI Engine
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: deep purple
+
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Security: security.md
+  - API Reference: api.md
+  - Examples:
+    - Code Assistant: examples/code_assistant.md
+    - Support Bot: examples/support_bot.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
