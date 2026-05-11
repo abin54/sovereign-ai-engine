@@ -62,6 +62,17 @@ async def ingest_document(
         "doc_id": str(uuid.uuid4())[:12]
     }
 
+@app.post("/v1/chat/quick")
+async def quick_chat(request: ChatRequest, key_info: dict = Depends(verify_api_key)):
+    """Optimized for mobile/IoT - lightweight model, ultra-low latency."""
+    # Use a smaller, faster model (phi3) and tight token limits
+    response = await engine.chat(
+        message=request.message,
+        model="phi3", 
+        max_tokens=256
+    )
+    return {"response": response, "model": "phi3-mini"}
+
 @app.post("/v1/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest, key_info: dict = Depends(verify_api_key)):
     start = time.time()
