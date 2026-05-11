@@ -13,7 +13,7 @@ def executor(tmp_path):
 @pytest.mark.asyncio
 async def test_execute_allowed_tool(executor):
     permissions = ToolPermissions(allowed_capabilities=[Capability.SHELL_EXEC])
-    args = {"cmd": "cmd /c echo hello"}
+    args = {"cmd": "echo hello"}
     
     result = await executor.execute("shell_command", args, permissions)
     assert "hello" in result
@@ -29,7 +29,7 @@ async def test_execute_allowed_tool(executor):
 async def test_execute_denied_tool(executor):
     # Only allow FS_READ, but try SHELL_EXEC
     permissions = ToolPermissions(allowed_capabilities=[Capability.FS_READ])
-    args = {"cmd": "cmd /c echo hello"}
+    args = {"cmd": "echo hello"}
     
     with pytest.raises(PermissionError, match="Zero-Trust Policy Violation"):
         await executor.execute("shell_command", args, permissions)
