@@ -40,7 +40,7 @@ services:
 
   # --- Orchestrator ---
   orchestrator:
-    build: .
+    image: ${DOCKER_USER:-abin54}/sovereign-engine:latest
     environment:
       - REDIS_HOST=redis
       - REDIS_PASSWORD=${REDIS_PASSWORD:-sovereign_secret}
@@ -59,7 +59,7 @@ services:
 
   # --- Skill Workers (Scalable) ---
   worker-security:
-    build: .
+    image: ${DOCKER_USER:-abin54}/sovereign-engine:latest
     command: python -m skills_security.main
     environment:
       - REDIS_HOST=redis
@@ -72,7 +72,7 @@ services:
       - sovereign-net
 
   worker-ml:
-    build: .
+    image: ${DOCKER_USER:-abin54}/sovereign-engine:latest
     command: python -m skills_ml.main
     environment:
       - REDIS_HOST=redis
@@ -84,7 +84,7 @@ services:
       - sovereign-net
 
   worker-memory:
-    build: .
+    image: ${DOCKER_USER:-abin54}/sovereign-engine:latest
     command: python -m memory.main
     environment:
       - REDIS_HOST=redis
@@ -98,7 +98,7 @@ services:
 
   # --- Frontend Dashboard ---
   web-ui:
-    build: ./interfaces/web-ui
+    image: ${DOCKER_USER:-abin54}/sovereign-web-ui:latest
     restart: unless-stopped
     networks:
       - sovereign-net
