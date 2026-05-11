@@ -45,9 +45,9 @@ class SovereignEngine:
         
         # 1. Semantic Cache Check (P2)
         if use_cache:
-            # Simplified caching: using a simple hash for now
+            # Using SHA-256 for cache key generation (B324 fix)
             import hashlib
-            cache_key = f"cache:llm:{hashlib.md5(message.encode()).hexdigest()}"
+            cache_key = f"cache:llm:{hashlib.sha256(message.encode()).hexdigest()}"
             # This would normally talk to Redis via self.bus.client
             # For this context, we'll log it as a cache miss
             self.logger.info("Cache miss", key=cache_key)

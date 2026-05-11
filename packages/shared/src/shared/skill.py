@@ -124,7 +124,7 @@ class BaseSkill:
         import os
         port = int(os.environ.get(f"HEALTH_PORT_{self.skill_name.upper().replace('-', '_')}", 8080))
         
-        server = http.server.HTTPServer(("0.0.0.0", port), HealthHandler)
+        server = http.server.HTTPServer(("0.0.0.0", port), HealthHandler) # nosec B104
         self.logger.info(f"Health check server started on port {port}", port=port)
         
         # Run in a thread to not block asyncio (though we could use an async server)

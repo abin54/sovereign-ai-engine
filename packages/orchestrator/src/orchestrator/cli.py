@@ -50,7 +50,7 @@ def validate(graph_file: Path):
     typer.secho("✅ Schema valid.", fg=typer.colors.GREEN)
 
 @app.command()
-def serve(host: str = "0.0.0.0", port: int = 8000):
+def serve(host: str = "0.0.0.0", port: int = 8000):  # nosec B104
     """Start the Sovereign AI Engine API Gateway."""
     import uvicorn
     from .api import app as fastapi_app
