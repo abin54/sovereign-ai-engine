@@ -32,7 +32,6 @@ def test_execution_order_circular():
 
 def test_execution_order_missing_dep():
     node1 = TaskNode(id="1", skill_name="s1", action="a1", input_template={}, dependencies=["non-existent"])
-    graph = TaskGraph(graph_id="g1", nodes={"1": node1})
     
-    with pytest.raises(ValueError, match="circular dependencies or missing nodes"):
-        graph.get_execution_order()
+    with pytest.raises(ValueError, match="missing dependency"):
+        TaskGraph(graph_id="g1", nodes={"1": node1})

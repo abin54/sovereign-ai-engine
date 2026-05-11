@@ -73,7 +73,13 @@ class StructuredLogger:
         self.logger.addHandler(handler)
 
     def info(self, msg, **kwargs):
-        self.logger.info(msg, extra=kwargs)
+        self.logger.info(msg, extra={"extra": kwargs})
+
+    def warning(self, msg, **kwargs):
+        self.logger.warning(msg, extra={"extra": kwargs})
 
     def error(self, msg, **kwargs):
-        self.logger.error(msg, extra=kwargs)
+        self.logger.error(msg, extra={"extra": kwargs})
+
+    def debug(self, msg, **kwargs):
+        self.logger.debug(msg, extra={"extra": kwargs})
