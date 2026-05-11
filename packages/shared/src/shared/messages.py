@@ -13,6 +13,7 @@ class TaskStatus(str, Enum):
 class Message(BaseModel):
     message_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: float = Field(default_factory=time.time)
+    auth_token: Optional[str] = None
     trace_id: Optional[str] = None
     span_id: Optional[str] = None
 

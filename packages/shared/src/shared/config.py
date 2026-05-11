@@ -6,8 +6,8 @@ class Settings(BaseSettings):
     redis_port: int = 6379
     redis_db: int = 0
     
-    # Audit Log
-    audit_db_path: str = "audit_ledger.db"
+    # Security
+    system_auth_token: Optional[str] = None
     audit_secret: str = "default-system-secret-key"
     
     # Telemetry

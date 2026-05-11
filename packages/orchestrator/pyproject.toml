@@ -9,6 +9,9 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "shared",
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
     "typer[all]",
     "pyyaml",
 ]

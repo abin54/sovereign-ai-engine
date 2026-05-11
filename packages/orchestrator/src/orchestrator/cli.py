@@ -49,5 +49,13 @@ def validate(graph_file: Path):
     typer.echo(f"Validating {graph_file}...")
     typer.secho("✅ Schema valid.", fg=typer.colors.GREEN)
 
+@app.command()
+def serve(host: str = "0.0.0.0", port: int = 8000):
+    """Start the Sovereign AI Engine API Gateway."""
+    import uvicorn
+    from .api import app as fastapi_app
+    typer.echo(f"Starting Sovereign API Gateway on {host}:{port}")
+    uvicorn.run(fastapi_app, host=host, port=port)
+
 if __name__ == "__main__":
     app()

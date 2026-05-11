@@ -1,11 +1,38 @@
 import logging
 import json
+import time
+from functools import wraps
+from typing import Any, Dict, Optional
 from opentelemetry import trace, metrics
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader, ConsoleMetricExporter
 from opentelemetry.sdk.resources import Resource
+
+# Tracing
+tracer = trace.get_tracer("sovereign-ai")
+
+def trace_llm_call(func):
+    """Decorator to trace LLM calls with performance metrics."""
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        with tracer.start_as_current_span(f"llm.{func.__name__}") as span:
+            start = time.time()
+            try:
+                result = await func(*args, **kwargs)
+                duration_ms = (time.time() - start) * 1000
+                
+                span.set_attribute("llm.duration_ms", duration_ms)
+                span.set_attribute("llm.status", "success")
+                
+                return result
+            except Exception as e:
+                span.set_attribute("llm.status", "error")
+                span.set_attribute("llm.error", str(e))
+                raise
+    
+    return wrapper
 
 def setup_telemetry(service_name: str):
     resource = Resource.create({"service.name": service_name})

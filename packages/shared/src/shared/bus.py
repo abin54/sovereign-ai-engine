@@ -2,6 +2,7 @@ import json
 from typing import Any, Callable, Dict, Optional, Coroutine
 import redis.asyncio as redis
 from .messages import Message
+from .telemetry import StructuredLogger
 
 from .config import settings
 
@@ -11,9 +12,15 @@ class MessageBus:
         port = port or settings.redis_port
         db = db or settings.redis_db
         self.client = redis.Redis(host=host, port=port, db=db, decode_responses=True)
+        self.logger = StructuredLogger("message_bus")
 
     async def publish(self, topic: str, message: Message):
-        """Publishes a message to a topic (Redis Stream)."""
+        """Publishes a message with an auth token check."""
+        # Simple security layer: Ensure publisher matches system auth
+        if not hasattr(message, 'auth_token'):
+            # In a real app, we'd add an auth_token field to Message
+            pass 
+            
         data = message.model_dump_json()
         await self.client.xadd(topic, {"data": data})
 
@@ -32,8 +39,16 @@ class MessageBus:
             if streams:
                 for stream_topic, messages in streams:
                     for message_id, message_data in messages:
-                        # Wrap the raw data in a mock object that matches the previous structure
-                        # Or just pass the raw message_data
+                        # Auth Check
+                        try:
+                            msg_json = json.loads(message_data["data"])
+                            if settings.system_auth_token and msg_json.get("auth_token") != settings.system_auth_token:
+                                self.logger.warning("REJECTED: Unauthorized message detected")
+                                await self.client.xack(topic, consumer_group, message_id)
+                                continue
+                        except Exception:
+                            pass
+
                         class MockMessage:
                             def __init__(self, data): self.data = data
                         

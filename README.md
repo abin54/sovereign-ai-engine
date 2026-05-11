@@ -1,141 +1,75 @@
-# Sovereign AI Engine: The Deterministic AI Runtime
+# Sovereign AI Engine 🛡️
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/abin54/sovereign-ai-engine)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+The first AI framework built for high-stakes environments where **reproducibility**, **policy enforcement**, and **zero-trust execution** are non-negotiable.
 
-> **"Reproduction is the soul of reliability."**
-> Sovereign is the first AI framework built for high-stakes environments where reproducibility, policy enforcement, and zero-trust execution are non-negotiable.
+Sovereign transforms LLMs from unpredictable black boxes into deterministic, secure components of your enterprise stack.
 
----
+## 🚀 Quick Start (True Sovereignty Mode)
 
-## 🚀 Quick Start
-
-### Installation
-
+### 1. Deploy the Infrastructure
 ```bash
-# Clone the repository
 git clone https://github.com/abin54/sovereign-ai-engine.git
 cd sovereign-ai-engine
-
-# Initialize the workspace using uv
-uv sync
+cp .env.example .env
+# Edit .env with your config
 ```
 
-### Running a Deterministic Task
-
+### 2. Start Ollama (The actual sovereign backend)
 ```bash
-# Execute a task graph with full audit logging and policy enforcement
-sovereign run ./examples/security_scan.yaml
+docker run -d --gpus all -v ollama_data:/root/.ollama -p 11434:11434 ollama/ollama
+docker exec ollama ollama pull llama3
+docker exec ollama ollama pull nomic-embed-text
 ```
 
----
-
-## 🏗️ Architecture
-
-Sovereign replaces "broadcast-and-hope" agent loops with a **Deterministic Task Graph (DTG)**.
-
-- **Task Nodes**: Pydantic-validated nodes with strict input/output schemas.
-- **Capability-Based Security**: Tools execute in a gVisor-inspired sandbox with granular permissions.
-- **Immutable Ledger**: Every action is recorded in a tamper-resistant SQLite audit ledger.
-- **Async Messaging**: Microservice architecture powered by Redis Streams.
-
----
-
-## ⚖️ Comparison
-
-| Feature | General Agent Frameworks | Sovereign AI Engine |
-| :--- | :--- | :--- |
-| **Execution Model** | Autonomous Loops (Probabilistic) | Deterministic Task Graphs (DAG) |
-| **Security Model** | Managed Cloud / Permission-based | Capability-Based (Default-Deny) |
-| **Validation** | Runtime Assertions | Type-Safe Pydantic Models |
-| **Audit Trail** | External Observability Tools | Local Hash-Chained Audit Ledger |
-| **Isolation** | Container-Level | Granular Tool-Level Sandboxing |
-
----
-
-## 🎯 When to Use Sovereign (and When NOT To)
-
-Sovereign is a **local-first, minimal-footprint runtime**. It is not a replacement for enterprise-grade distributed systems.
-
-### Use Sovereign IF
-
-- You need a **single-binary-feel** runtime that runs entirely on local/air-gapped hardware.
-- You require **embedded audit logs** (SQLite) without a SaaS dependency.
-- You are building a **lightweight CLI tool** or edge-device agent.
-
-### Use [Best-of-Breed] Tools IF
-
-- **Orchestration**: You need complex scheduling and retries at scale → Use **Prefect** or **Dagster**.
-- **Agent Logic**: You need a mature, community-backed graph framework → Use **LangGraph**.
-- **Sandboxing**: You need production-grade microVM isolation *today* → Use **E2B**.
-- **Observability**: You need an interactive, team-based dashboard → Use **Langfuse**.
-- **Production Agents**: You need a battle-tested framework with multi-agent support → Use **CrewAI** or **AutoGen**.
-
----
-
-## 🛡️ Security & Zero-Trust
-
-The Sovereign runtime enforces a **Default-DENY** policy. No tool can access the filesystem, network, or shell without an explicit capability grant.
-
-- **Isolation**: Tools run in temporary, isolated directories.
-- **Integrity**: Audit logs are stored in a SQLite database with Write-Ahead Logging (WAL).
-- **Control**: Subprocess execution avoids `shell=True` to prevent command injection.
-
----
-
-## 🗺️ Roadmap
-
-### 30-Day: Foundation
-
-- [x] Monorepo Transition
-- [x] Zero-Trust Executor MVP
-- [ ] Comprehensive CLI (`sovereign-cli`)
-- [ ] Task Graph Schema Validation
-
-### 90-Day: Scale
-
-- [x] Docker-based MicroVM Sandboxing (Initial Docker Support)
-- [x] Distributed Task Execution (Redis Streams)
-- [ ] Real-time Observability Dashboard
-
-### 180-Day: Ecosystem
-
-- [ ] Sovereign Hub (Shared Task Graphs)
-- [ ] Long-term Cognitive Memory Service
-- [ ] Local-first LLM Optimization
-
----
-
-## 🐳 Running with Docker
-
-The easiest way to run the full Sovereign stack (Redis, Orchestrator, and Skills) is via Docker Compose:
-
+### 3. Start the Sovereign Stack
 ```bash
-docker-compose up --build
+docker compose -f docker-compose.prod.yml up -d
 ```
 
-This will start:
-
-- **Redis**: The message broker.
-- **Orchestrator**: The DAG execution engine.
-- **Skills (Security, ML, Memory)**: Worker services that process tasks.
-
-### Submitting a Task
-
-Once the services are running, you can submit a task graph using the CLI:
-
+### 4. Ingest Private Knowledge
 ```bash
-uv run sovereign run ./examples/security_scan.yaml
+curl -X POST http://localhost:80/v1/documents/ingest \
+  -H "X-API-Key: sk-sovereign-admin-xxxxx" \
+  -F "file=@company_handbook.pdf"
 ```
 
----
+### 5. Secure Query with RAG
+```bash
+curl -X POST http://localhost:80/v1/chat \
+  -H "X-API-Key: sk-sovereign-admin-xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "What is our remote work policy?",
+    "use_rag": true
+  }'
+```
+
+## 🏗️ Architecture: The Zero-Trust Engine
+Unlike "convenience-first" wrappers, Sovereign is built on four pillars of integrity:
+
+1. **Deterministic DAG Execution**: Every AI workflow is a structured graph. No autonomous hallucinations, no infinite loops.
+2. **Kernel-Level Sandboxing (nsjail)**: Tools and agents run in isolated environments with zero access to your host filesystem or network unless explicitly granted.
+3. **Immutable Audit Ledger**: Every action, tool call, and AI response is hash-chained and HMAC-signed. Your compliance team can verify the integrity of the engine's history offline.
+4. **Multi-LLM Agnostic**: Hot-swap between **OpenAI**, **Anthropic**, **vLLM**, or **Llama.cpp** without changing a line of code.
+
+## 📊 Sovereignty Scorecard
+
+| Feature | Sovereign AI Engine | Standard Wrapper |
+| :--- | :---: | :---: |
+| **Execution Model** | Deterministic DAG | Autonomous Loop |
+| **Sandboxing** | nsjail / gVisor | subprocess.run |
+| **Audit Log** | Hash-chained & Signed | Plain SQLite |
+| **Local LLM** | Native (Ollama/vLLM) | Cloud-Only |
+| **Infrastructure** | Microservices + K8s | Monolithic Script |
+
+## 🛡️ Security Posture
+Sovereign operates on a **Default-Deny** basis. Capabilities must be explicitly granted to tasks:
+- `FS_READ`: Access specific directories.
+- `NET_OUTBOUND`: Access specific host/port pairs.
+- `SHELL_EXEC`: Run strictly validated commands.
 
 ## 🤝 Contributing
-
-We welcome contributions from engineers who value reliability over hype. Please read our [Contributing Guide](CONTRIBUTING.md) to get started.
+We welcome contributions that prioritize security over convenience. See [CONTRIBUTING.md](./CONTRIBUTING.md) for our engineering standards.
 
 ---
-
-## 📄 License
-
-MIT © Abinash Sahu
+**Honest Disclaimer**: Sovereign is a high-integrity runtime. If you are looking for a "one-click" autonomous agent to browse the web for you, this is not it. If you are looking to deploy AI in a regulated, secure, or air-gapped environment, you are in the right place.
