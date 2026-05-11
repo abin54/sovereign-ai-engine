@@ -68,6 +68,11 @@ Sovereign operates on a **Default-Deny** basis. Capabilities must be explicitly 
 - `NET_OUTBOUND`: Access specific host/port pairs.
 - `SHELL_EXEC`: Run strictly validated commands.
 
+## 📖 Real-World Examples
+Explore our [examples/](./examples) directory to see Sovereign in action:
+- **[Code Security Assistant](./examples/code_assistant.py)**: Analyze sensitive source code for vulnerabilities 100% locally.
+- **[Sovereign Support Bot](./examples/support_bot.py)**: A grounded RAG assistant that uses private knowledge without data leaks.
+
 ## 🤝 Contributing
 We welcome contributions that prioritize security over convenience. See [CONTRIBUTING.md](./CONTRIBUTING.md) for our engineering standards.
 
