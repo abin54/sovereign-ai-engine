@@ -2,6 +2,16 @@ from typing import Any, Dict, List, Optional, AsyncGenerator
 from .llm import LLMFactory, LLMProvider, BaseLLMAdapter
 from .telemetry import StructuredLogger, trace_llm_call
 
+class Agent:
+    """A sovereign agent with a specific persona and memory."""
+    def __init__(self, engine: SovereignEngine, system_prompt: str):
+        self.engine = engine
+        self.system_prompt = system_prompt
+
+    async def run(self, message: str, **kwargs) -> str:
+        full_message = f"SYSTEM: {self.system_prompt}\nUSER: {message}"
+        return await self.engine.chat(full_message, **kwargs)
+
 class SovereignEngine:
     """The ACTUAL engine - orchestrates LLMs, Memory, and Tools with a clean API."""
     
